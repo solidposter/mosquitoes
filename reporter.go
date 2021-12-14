@@ -52,7 +52,7 @@ func reporter(input <-chan map[string]int64, interval int) {
 				if event["timeNano"] == 0 { // ignore initial session report
 					break
 				}
-				fmt.Println("session report", event)
+				fmt.Println(time.Now().Format("20060102 15:04:05.999"), event)
 			}
 
 			_, isRequest := event["isRequest"]
@@ -88,6 +88,9 @@ func printRequestSummary(rSummary requestSummary) {
 	if rSummary.requests == 0 {
 		return
 	}
+	t := time.Now()
+	fmt.Print(t.Format("15:04:05.999 "))
+
 	fmt.Printf("requests: %v", rSummary.requests)
 	fmt.Printf(" TCP-reuse: %v", rSummary.tcpreuse)
 	fmt.Printf(" comp: %v", rSummary.compression)
