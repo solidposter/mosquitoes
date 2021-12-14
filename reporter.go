@@ -26,6 +26,9 @@ type requestSummary struct {
 	reqFastest  int64
 	reqSlowest  int64
 	reqTotal    int64
+	sizeTot     int64
+	sizeBig     int64
+	sizeSmall   int64
 	compression int64
 	tcpreuse    int64
 	statusCodes map[int64]int64
@@ -57,6 +60,7 @@ func reporter(input <-chan map[string]int64, interval int) {
 
 			_, isRequest := event["isRequest"]
 			if isRequest {
+				//	fmt.Println("request report", event)
 				rSummary.requests += 1
 				rSummary.reqTotal += event["timeNano"]
 				if rSummary.reqFastest == 0 || event["timeNano"] < rSummary.reqFastest {
@@ -67,7 +71,13 @@ func reporter(input <-chan map[string]int64, interval int) {
 				}
 				rSummary.compression += event["compression"]
 				rSummary.tcpreuse += event["TCPreuse"]
-				//	fmt.Println("request report", event)
+				rSummary.sizeTot += event["contentLength"]
+				if rSummary.sizeBig == 0 || event["contentLength"] > rSummary.sizeBig {
+					rSummary.sizeBig = event["contentLength"]
+				}
+				if rSummary.sizeSmall == 0 || event["contentLength"] < rSummary.sizeSmall {
+					rSummary.sizeSmall = event["contentLength"]
+				}
 
 				// record all the status codes
 				statusCode, _ := event["statusCode"]
@@ -98,6 +108,11 @@ func printRequestSummary(rSummary requestSummary) {
 	fmt.Printf(" avg: %vms", avgTimeMilli)
 	fmt.Printf(" fastest: %vms", rSummary.reqFastest/1000/1000)
 	fmt.Printf(" slowest: %vms", rSummary.reqSlowest/1000/1000)
+	avgSizeBytes := rSummary.sizeTot / rSummary.requests
+
+	fmt.Printf(" avgSize: %v", avgSizeBytes)
+	fmt.Printf(" bigSize: %v", rSummary.sizeBig)
+	fmt.Printf(" smallSize: %v", rSummary.sizeSmall)
 
 	fmt.Printf(" codes(")
 	for key, value := range rSummary.statusCodes {
