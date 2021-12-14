@@ -108,11 +108,18 @@ func printRequestSummary(rSummary requestSummary) {
 	fmt.Printf(" avg: %vms", avgTimeMilli)
 	fmt.Printf(" fastest: %vms", rSummary.reqFastest/1000/1000)
 	fmt.Printf(" slowest: %vms", rSummary.reqSlowest/1000/1000)
-	avgSizeBytes := rSummary.sizeTot / rSummary.requests
 
-	fmt.Printf(" avgSize: %v", avgSizeBytes)
-	fmt.Printf(" bigSize: %v", rSummary.sizeBig)
-	fmt.Printf(" smallSize: %v", rSummary.sizeSmall)
+	avgSizeBytes := rSummary.sizeTot / rSummary.requests
+	fmt.Printf(" totContent:%v", rSummary.sizeTot)
+	if avgSizeBytes == rSummary.sizeBig {
+		fmt.Printf(" reqSize:%v", avgSizeBytes)
+	} else {
+		fmt.Printf(" reqSize(")
+		fmt.Printf("avg:%v", avgSizeBytes)
+		fmt.Printf(" big:%v", rSummary.sizeBig)
+		fmt.Printf(" small:%v", rSummary.sizeSmall)
+		fmt.Printf(")")
+	}
 
 	fmt.Printf(" codes(")
 	for key, value := range rSummary.statusCodes {
