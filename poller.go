@@ -123,10 +123,8 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 			request["statusCode"] = int64(resp.StatusCode)
 			if resp.Uncompressed {
 				request["compression"] = 1
-				request["contentLength"] = int64(len(body))
-			} else {
-				request["contentLength"] = resp.ContentLength
 			}
+			request["contentLength"] = int64(len(body))
 
 			reportQ <- copyReport(request)
 			//		fmt.Println("requestMap:", request)
