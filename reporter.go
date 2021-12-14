@@ -101,13 +101,13 @@ func printRequestSummary(rSummary requestSummary) {
 	t := time.Now()
 	fmt.Print(t.Format("15:04:05.999 "))
 
-	fmt.Printf("requests: %v", rSummary.requests)
-	fmt.Printf(" TCP-reuse: %v", rSummary.tcpreuse)
-	fmt.Printf(" comp: %v", rSummary.compression)
+	fmt.Printf("requests:%v", rSummary.requests)
+	fmt.Printf(" TCP-reuse:%v", rSummary.tcpreuse)
+	fmt.Printf(" comp:%v", rSummary.compression)
 	avgTimeMilli := rSummary.reqTotal / rSummary.requests / 1000 / 1000
-	fmt.Printf(" avg: %vms", avgTimeMilli)
-	fmt.Printf(" fastest: %vms", rSummary.reqFastest/1000/1000)
-	fmt.Printf(" slowest: %vms", rSummary.reqSlowest/1000/1000)
+	fmt.Printf(" avg:%vms", avgTimeMilli)
+	fmt.Printf(" fastest:%vms", rSummary.reqFastest/1000/1000)
+	fmt.Printf(" slowest:%vms", rSummary.reqSlowest/1000/1000)
 
 	avgSizeBytes := rSummary.sizeTot / rSummary.requests
 	fmt.Printf(" totContent:%v", rSummary.sizeTot)
@@ -123,9 +123,9 @@ func printRequestSummary(rSummary requestSummary) {
 
 	fmt.Printf(" codes(")
 	for key, value := range rSummary.statusCodes {
-		fmt.Printf(" %v: %v", key, value)
+		fmt.Printf(" %v:%v", key, value)
 	}
-	fmt.Printf(" )")
+	fmt.Printf(")")
 
 	fmt.Println()
 }
