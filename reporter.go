@@ -31,6 +31,8 @@ type requestSummary struct {
 	sizeSmall   int64
 	compression int64
 	tcpreuse    int64
+	tlsStart    int64
+	tlsSuccess  int64
 	statusCodes map[int64]int64
 }
 
@@ -79,6 +81,9 @@ func reporter(input <-chan map[string]int64, interval int) {
 					rSummary.sizeSmall = event["contentLength"]
 				}
 
+				rSummary.tlsStart += event["TLSstart"]
+				rSummary.tlsSuccess += event["TLSsuccess"]
+
 				// record all the status codes
 				statusCode, _ := event["statusCode"]
 				_, ok := rSummary.statusCodes[statusCode]
@@ -126,6 +131,10 @@ func printRequestSummary(rSummary requestSummary) {
 		fmt.Printf(" %v:%v", key, value)
 	}
 	fmt.Printf(")")
+
+	if rSummary.tlsStart != 0 {
+		fmt.Printf(" tls(start:%v success:%v)", rSummary.tlsStart, rSummary.tlsSuccess)
+	}
 
 	fmt.Println()
 }
