@@ -31,6 +31,8 @@ type requestSummary struct {
 	sizeSmall   int64
 	compression int64
 	tcpreuse    int64
+	dnsStart    int64
+	dnsSuccess  int64
 	tlsStart    int64
 	tlsSuccess  int64
 	statusCodes map[int64]int64
@@ -81,6 +83,8 @@ func reporter(input <-chan map[string]int64, interval int) {
 					rSummary.sizeSmall = event["contentLength"]
 				}
 
+				rSummary.dnsStart += event["DNSstart"]
+				rSummary.dnsSuccess += event["DNSsuccess"]
 				rSummary.tlsStart += event["TLSstart"]
 				rSummary.tlsSuccess += event["TLSsuccess"]
 
@@ -132,6 +136,9 @@ func printRequestSummary(rSummary requestSummary) {
 	}
 	fmt.Printf(")")
 
+	if rSummary.dnsStart != 0 {
+		fmt.Printf(" dns(start:%v success:%v)", rSummary.dnsStart, rSummary.dnsSuccess)
+	}
 	if rSummary.tlsStart != 0 {
 		fmt.Printf(" tls(start:%v success:%v)", rSummary.tlsStart, rSummary.tlsSuccess)
 	}
