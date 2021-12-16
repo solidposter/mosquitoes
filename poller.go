@@ -46,11 +46,34 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 	client := &http.Client{Transport: tr}
 
 	clientTrace := &httptrace.ClientTrace{
-		//		GetConn: func(hostPort string) {
-		//			fmt.Println("starting to create conn:", hostPort)
-		//		},
+		GetConn: func(hostPort string) {
+			fmt.Println("starting to create conn:", hostPort)
+		},
+		DNSStart: func(info httptrace.DNSStartInfo) {
+			fmt.Println("DNS start:", info)
+			request["DNSstart"] = 1
+		},
+		DNSDone: func(info httptrace.DNSDoneInfo) {
+			fmt.Println("DNS done:", info)
+			if info.Err == nil {
+				request["DNSsuccess"] = 1
+			}
+		},
+		TLSHandshakeStart: func() {
+			fmt.Println("starting TLS handshake")
+			request["TLSstart"] = 1
+			session["TLSstart"] += 1
+
+		},
+		TLSHandshakeDone: func(state tls.ConnectionState, errmsg error) {
+			fmt.Println("TLS done:", state, errmsg)
+			if state.HandshakeComplete {
+				request["TLSsuccess"] = 1
+				session["TLSsuccess"] += 1
+			}
+		},
 		GotConn: func(info httptrace.GotConnInfo) {
-			//			fmt.Println("connection established:", info)
+			fmt.Println("connection established:", info)
 			if info.Reused {
 				request["TCPreuse"] = 1
 			} else {
@@ -64,29 +87,6 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 				sStart = time.Now()
 				sTicker.Reset(time.Duration(lifetime) * time.Second)
 				resetSession(session)
-			}
-		},
-		DNSStart: func(info httptrace.DNSStartInfo) {
-			//			fmt.Println("DNS start:", info)
-			request["DNSstart"] = 1
-		},
-		DNSDone: func(info httptrace.DNSDoneInfo) {
-			//			fmt.Println("DNS done:", info)
-			if info.Err == nil {
-				request["DNSsuccess"] = 1
-			}
-		},
-		TLSHandshakeStart: func() {
-			//			fmt.Println("starting TLS handshake")
-			request["TLSstart"] = 1
-			session["TLSstart"] += 1
-
-		},
-		TLSHandshakeDone: func(state tls.ConnectionState, errmsg error) {
-			// fmt.Println("TLS done:", state, errmsg)
-			if state.HandshakeComplete {
-				request["TLSsuccess"] = 1
-				session["TLSsuccess"] += 1
 			}
 		},
 	}
