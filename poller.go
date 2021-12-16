@@ -46,15 +46,15 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 	client := &http.Client{Transport: tr}
 
 	clientTrace := &httptrace.ClientTrace{
-		GetConn: func(hostPort string) {
-			fmt.Println("starting to create conn:", hostPort)
-		},
+		//		GetConn: func(hostPort string) {
+		//			fmt.Println("starting to create conn:", hostPort)
+		//		},
 		DNSStart: func(info httptrace.DNSStartInfo) {
-			fmt.Println("DNS start:", info)
+			//			fmt.Println("DNS start:", info)
 			request["DNSstart"] = 1
 		},
 		DNSDone: func(info httptrace.DNSDoneInfo) {
-			fmt.Println("DNS done:", info)
+			//			fmt.Println("DNS done:", info)
 			if info.Err == nil {
 				request["DNSsuccess"] = 1
 			}
@@ -62,14 +62,12 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 		TLSHandshakeStart: func() {
 			fmt.Println("starting TLS handshake")
 			request["TLSstart"] = 1
-			session["TLSstart"] += 1
 
 		},
 		TLSHandshakeDone: func(state tls.ConnectionState, errmsg error) {
 			fmt.Println("TLS done:", state, errmsg)
 			if state.HandshakeComplete {
 				request["TLSsuccess"] = 1
-				session["TLSsuccess"] += 1
 			}
 		},
 		GotConn: func(info httptrace.GotConnInfo) {
@@ -203,6 +201,9 @@ func updateSession(request, session map[string]int64) {
 	if session["reqSlowest"] == 0 || request["timeNano"] > session["reqSlowest"] {
 		session["reqSlowest"] = request["timeNano"]
 	}
+
+	session["TLSstart"] += request["TLSstart"]
+	session["TLSsuccess"] += request["TLSsuccess"]
 }
 
 // Copy the map that we send via channel to the reporter, so we don't send a reference
