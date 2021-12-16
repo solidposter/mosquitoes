@@ -41,7 +41,7 @@ func main() {
 	}
 
 	fmt.Println("client interval(ms):", *intervalPtr)
-	fmt.Println("session lifetime (s):", *lifetimePtr)
+	fmt.Println("session lifetime(s):", *lifetimePtr)
 	fmt.Println("number of clients:", *numclientPtr)
 	fmt.Println("URL to fetch:", *urlPtr)
 	fmt.Println("disable compression:", *compPtr)
