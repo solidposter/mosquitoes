@@ -110,8 +110,13 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 			resp, err := client.Do(req)
 			if err != nil {
 				fmt.Printf("Do error %s", err)
+				rEnd = time.Now()
 				request["error"] = 1
-				os.Exit(2)
+				request["timeNano"] = rEnd.Sub(rStart).Nanoseconds()
+				reportQ <- copyReport(request)
+				updateSession(request, session)
+				break
+				//	os.Exit(2)
 			}
 			//			fmt.Println("Status:", resp.Status)
 			//			fmt.Println("----")

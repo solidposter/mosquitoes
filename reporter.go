@@ -26,6 +26,7 @@ type requestSummary struct {
 	reqFastest  int64
 	reqSlowest  int64
 	reqTotal    int64
+	reqError    int64
 	sizeTot     int64
 	sizeBig     int64
 	sizeSmall   int64
@@ -73,6 +74,9 @@ func reporter(input <-chan map[string]int64, interval int) {
 				if rSummary.reqSlowest == 0 || event["timeNano"] > rSummary.reqSlowest {
 					rSummary.reqSlowest = event["timeNano"]
 				}
+
+				rSummary.reqError += event["error"]
+
 				rSummary.compression += event["compression"]
 				rSummary.tcpreuse += event["TCPreuse"]
 				rSummary.sizeTot += event["contentLength"]
@@ -111,6 +115,7 @@ func printRequestSummary(rSummary requestSummary) {
 	fmt.Print(t.Format("15:04:05.999 "))
 
 	fmt.Printf("requests:%v", rSummary.requests)
+	fmt.Printf(" error:%v ", rSummary.reqError)
 	fmt.Printf(" TCP-reuse:%v", rSummary.tcpreuse)
 	fmt.Printf(" comp:%v", rSummary.compression)
 	avgTimeMilli := rSummary.reqTotal / rSummary.requests / 1000 / 1000
