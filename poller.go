@@ -71,7 +71,7 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 			}
 		},
 		GotConn: func(info httptrace.GotConnInfo) {
-			fmt.Println("connection established:", info)
+			// fmt.Println("connection established:", info)
 			if info.Reused {
 				request["TCPreuse"] = 1
 			} else {

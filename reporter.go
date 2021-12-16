@@ -165,7 +165,7 @@ func printSession(session map[string]int64) {
 	fmt.Printf(" slowest:%vms", session["reqSlowest"]/1000/1000)
 	fmt.Print(")")
 
-	fmt.Printf(" tls(start:%v success:%v)", session["tlsStart"], session["tlsSuccess"])
+	fmt.Printf(" tls(start:%v success:%v)", session["TLSstart"], session["TLSsuccess"])
 	fmt.Printf(" clientClose:%v", session["clientClose"])
 	fmt.Printf(" error:%v", session["error"])
 
