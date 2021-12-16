@@ -46,32 +46,27 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 	client := &http.Client{Transport: tr}
 
 	clientTrace := &httptrace.ClientTrace{
-		//		GetConn: func(hostPort string) {
-		//			fmt.Println("starting to create conn:", hostPort)
-		//		},
+		// GetConn: func(hostPort string) {
+		// 	fmt.Println("starting to create conn:", hostPort)
+		// },
 		DNSStart: func(info httptrace.DNSStartInfo) {
-			//			fmt.Println("DNS start:", info)
 			request["DNSstart"] = 1
 		},
 		DNSDone: func(info httptrace.DNSDoneInfo) {
-			//			fmt.Println("DNS done:", info)
 			if info.Err == nil {
 				request["DNSsuccess"] = 1
 			}
 		},
 		TLSHandshakeStart: func() {
-			fmt.Println("starting TLS handshake")
 			request["TLSstart"] = 1
 
 		},
 		TLSHandshakeDone: func(state tls.ConnectionState, errmsg error) {
-			fmt.Println("TLS done:", state, errmsg)
 			if state.HandshakeComplete {
 				request["TLSsuccess"] = 1
 			}
 		},
 		GotConn: func(info httptrace.GotConnInfo) {
-			// fmt.Println("connection established:", info)
 			if info.Reused {
 				request["TCPreuse"] = 1
 			} else {
@@ -80,7 +75,6 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 				}
 				session["timeNano"] = sEnd.Sub(sStart).Nanoseconds()
 				reportQ <- copyReport(session)
-				// fmt.Println("sessionMap:", session)
 				// reset session and statistics
 				sStart = time.Now()
 				sTicker.Reset(time.Duration(lifetime) * time.Second)
@@ -92,11 +86,8 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 	for {
 		select {
 		case <-rTicker.C:
-			// reset request statistics
 			resetRequest(request)
 
-			//			fmt.Println("---", id)
-			//			fmt.Println("NewRequest", id)
 			req, err := http.NewRequest("GET", url, nil)
 			if err != nil {
 				fmt.Printf("NewRequest error %s", err)
@@ -106,7 +97,6 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 			req = req.WithContext(clientTraceCtx)
 
 			rStart = time.Now()
-			//			fmt.Println("Do", id)
 			resp, err := client.Do(req)
 			if err != nil {
 				fmt.Println("Do error %s", err)
@@ -116,10 +106,7 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 				reportQ <- copyReport(request)
 				updateSession(request, session)
 				break
-				//	os.Exit(2)
 			}
-			//			fmt.Println("Status:", resp.Status)
-			//			fmt.Println("----")
 			body, err := io.ReadAll(resp.Body)
 			resp.Body.Close()
 
@@ -132,15 +119,11 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 			request["contentLength"] = int64(len(body))
 
 			reportQ <- copyReport(request)
-			//		fmt.Println("requestMap:", request)
-
 			updateSession(request, session)
 
 		case <-sTicker.C:
-			//			fmt.Println("Closing connections --------------------", id)
 			tr.CloseIdleConnections()
 			session["clientClose"] = 1
-			//			fmt.Println("Closed --------------------", id)
 		}
 	}
 }
