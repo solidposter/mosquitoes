@@ -190,6 +190,7 @@ func resetSession(session map[string]int64) {
 	session["TLSstart"] = 0   // number of TLS handshakes started
 	session["TLSsuccess"] = 0 // number of TLS handshakes successful
 }
+
 func updateSession(request, session map[string]int64) {
 	session["numRequests"] += 1
 	session["error"] += request["error"]
