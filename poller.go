@@ -79,12 +79,14 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 		TLSHandshakeStart: func() {
 			//			fmt.Println("starting TLS handshake")
 			request["TLSstart"] = 1
+			session["TLSstart"] += 1
 
 		},
 		TLSHandshakeDone: func(state tls.ConnectionState, errmsg error) {
 			// fmt.Println("TLS done:", state, errmsg)
 			if state.HandshakeComplete {
 				request["TLSsuccess"] = 1
+				session["TLSsuccess"] += 1
 			}
 		},
 	}
@@ -166,15 +168,31 @@ func resetSession(session map[string]int64) {
 	// all variables used in this map are documented here
 	// isSession = 1 to identify a session map
 	// lifetime = session lifetime in seconds, as specified on startup
+
+	// store information from previous session
+	_, ok := session["error"]
+	if ok {
+		session["prevError"] = session["error"]
+	}
+	_, ok = session["clientClose"]
+	if ok {
+		session["prevClientClose"] = session["clientClose"]
+	}
+
+	// reset values for a new session
 	session["reqFastest"] = 0  // fastest request
 	session["reqSlowest"] = 0  // slowest request
 	session["reqSum"] = 0      // Total request times
 	session["numRequests"] = 0 // number of requests in the session
 	session["clientClose"] = 0 // 1 if session is closed by client, else 0
 	session["timeNano"] = 0    // session time in nanoseconds
+	session["error"] = 0
+	session["TLSstart"] = 0   // number of TLS handshakes started
+	session["TLSsuccess"] = 0 // number of TLS handshakes successful
 }
 func updateSession(request, session map[string]int64) {
 	session["numRequests"] += 1
+	session["error"] += request["error"]
 
 	session["reqSum"] += request["timeNano"]
 	if session["reqFastest"] == 0 || request["timeNano"] < session["reqFastest"] {
