@@ -113,7 +113,7 @@ func printRequestSummary(rSummary requestSummary) {
 		return
 	}
 	t := time.Now()
-	fmt.Print(t.Format("15:04:05.999 "))
+	fmt.Print(t.Format("15:04:05.99 "))
 
 	fmt.Printf("requests:%v", rSummary.requests)
 	fmt.Printf(" error:%v", rSummary.reqError)
@@ -154,10 +154,10 @@ func printRequestSummary(rSummary requestSummary) {
 
 func printSession(session map[string]int64) {
 	t := time.Now()
-	fmt.Print(t.Format("15:04:05.999 "))
+	fmt.Print(t.Format("15:04:05.99 "))
 
 	fmt.Print("session")
-	fmt.Printf(" lifetime(s)(requested:%v actual%v", session["lifetime"], session["timeNano"]/1000/1000/1000)
+	fmt.Printf(" lifetime(s)(requested:%v actual:%v)", session["lifetime"], session["timeNano"]/1000/1000/1000)
 
 	fmt.Printf(" requests(tot:%v", session["numRequests"])
 	fmt.Printf(" avg:%vms", session["reqSum"]/session["numRequests"]/1000/1000)
@@ -168,4 +168,6 @@ func printSession(session map[string]int64) {
 	fmt.Printf(" tls(start:%v success:%v)", session["tlsStart"], session["tlsSuccess"])
 	fmt.Printf(" clientClose:%v", session["clientClose"])
 	fmt.Printf(" error:%v", session["error"])
+
+	fmt.Println()
 }
