@@ -156,7 +156,7 @@ func printSession(session map[string]int64) {
 	t := time.Now()
 	fmt.Print(t.Format("15:04:05.99 "))
 
-	fmt.Print("session")
+	fmt.Print("TCPsession")
 	fmt.Printf(" lifetime(s)(requested:%v actual:%v)", session["lifetime"], session["timeNano"]/1000/1000/1000)
 
 	fmt.Printf(" requests(tot:%v", session["numRequests"])
