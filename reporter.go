@@ -161,9 +161,11 @@ func printSession(session map[string]int64) {
 
 	fmt.Printf(" requests(tot:%v", session["numRequests"])
 	fmt.Printf(" comp:%v", session["compRequests"])
-	fmt.Printf(" avg:%vms", session["reqSum"]/session["numRequests"]/1000/1000)
-	fmt.Printf(" fastest:%vms", session["reqFastest"]/1000/1000)
-	fmt.Printf(" slowest:%vms", session["reqSlowest"]/1000/1000)
+	if session["numRequests"] != 0 {
+		fmt.Printf(" avg:%vms", session["reqSum"]/session["numRequests"]/1000/1000)
+		fmt.Printf(" fastest:%vms", session["reqFastest"]/1000/1000)
+		fmt.Printf(" slowest:%vms", session["reqSlowest"]/1000/1000)
+	}
 	fmt.Print(")")
 
 	fmt.Printf(" tls(start:%v success:%v)", session["TLSstart"], session["TLSsuccess"])
