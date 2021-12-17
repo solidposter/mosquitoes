@@ -160,6 +160,7 @@ func printSession(session map[string]int64) {
 	fmt.Printf(" lifetime(s)(requested:%v actual:%v)", session["lifetime"], session["timeNano"]/1000/1000/1000)
 
 	fmt.Printf(" requests(tot:%v", session["numRequests"])
+	fmt.Printf(" comp:%v", session["compRequests"])
 	fmt.Printf(" avg:%vms", session["reqSum"]/session["numRequests"]/1000/1000)
 	fmt.Printf(" fastest:%vms", session["reqFastest"]/1000/1000)
 	fmt.Printf(" slowest:%vms", session["reqSlowest"]/1000/1000)
