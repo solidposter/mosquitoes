@@ -26,8 +26,9 @@ import (
 func main() {
 	compPtr := flag.Bool("c", false, "disables compression")
 	intervalPtr := flag.Int("i", 1000, "client interval between requests in milliseconds")
+	lifetimePtr := flag.Int("l", 6048000, "session lifetime in seconds")
 	numclientPtr := flag.Int("n", 1, "number of client sessions")
-	lifetimePtr := flag.Int("s", 6048000, "session lifetime in seconds")
+	slowstartPtr := flag.Bool("s", false, "slow start, stage the sessions over the session life time instead of client interval")
 	urlPtr := flag.String("u", "https://localhost/", "URL to fetch")
 	flag.Parse()
 
@@ -43,6 +44,7 @@ func main() {
 	fmt.Println("client interval(ms):", *intervalPtr)
 	fmt.Println("session lifetime(s):", *lifetimePtr)
 	fmt.Println("number of clients:", *numclientPtr)
+	fmt.Println("slow start of sessions:", *slowstartPtr)
 	fmt.Println("URL to fetch:", *urlPtr)
 	fmt.Println("disable compression:", *compPtr)
 
@@ -52,10 +54,11 @@ func main() {
 	for i := 0; i < *numclientPtr; i++ {
 		go poller(i, *lifetimePtr, *intervalPtr, *urlPtr, reportQ, *compPtr)
 		// staging pollers
-		if *intervalPtr >= 1000 {
+		if *slowstartPtr { // stage over session time
+			time.Sleep(time.Duration(*lifetimePtr / *numclientPtr) * time.Second)
+
+		} else { // stage over interval
 			time.Sleep(time.Duration(*intervalPtr / *numclientPtr) * time.Millisecond)
-		} else {
-			time.Sleep(time.Duration(1000 / *numclientPtr) * time.Millisecond)
 		}
 	}
 	// wait forever
