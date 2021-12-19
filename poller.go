@@ -32,7 +32,7 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 	var rTicker, sTicker *time.Ticker // request and session tickers
 	request := make(map[string]int64) // request statistics, see func resetRequest for more info
 	request["isRequest"] = 1
-	session := make(map[string]int64) // session statistics, see func sessionRequest for more info
+	session := make(map[string]int64) // session statistics, see func resetSession for more info
 	session["isSession"] = 1
 	session["lifetime"] = int64(lifetime)
 
