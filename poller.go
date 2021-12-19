@@ -90,7 +90,7 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 
 			req, err := http.NewRequest("GET", url, nil)
 			if err != nil {
-				fmt.Printf("NewRequest error %s", err)
+				fmt.Printf("NewRequest error:", err)
 				os.Exit(1)
 			}
 			clientTraceCtx := httptrace.WithClientTrace(req.Context(), clientTrace)
@@ -99,7 +99,7 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 			rStart = time.Now()
 			resp, err := client.Do(req)
 			if err != nil {
-				fmt.Println("Do error %s", err)
+				fmt.Println("Do error:", err)
 				rEnd = time.Now()
 				request["error"] = 1
 				request["timeNano"] = rEnd.Sub(rStart).Nanoseconds()
