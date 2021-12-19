@@ -175,15 +175,18 @@ func resetSession(session map[string]int64) {
 
 func updateSession(request, session map[string]int64) {
 	session["numRequests"] += 1
-	session["error"] += request["error"]
 
-	session["reqSum"] += request["timeNano"]
-	if session["reqFastest"] == 0 || request["timeNano"] < session["reqFastest"] {
-		session["reqFastest"] = request["timeNano"]
-	}
+	if request["error"] == 0 { // update this data only on successful requests
+		session["reqSum"] += request["timeNano"]
+		if session["reqFastest"] == 0 || request["timeNano"] < session["reqFastest"] {
+			session["reqFastest"] = request["timeNano"]
+		}
 
-	if session["reqSlowest"] == 0 || request["timeNano"] > session["reqSlowest"] {
-		session["reqSlowest"] = request["timeNano"]
+		if session["reqSlowest"] == 0 || request["timeNano"] > session["reqSlowest"] {
+			session["reqSlowest"] = request["timeNano"]
+		}
+	} else {
+		session["error"] += request["error"]
 	}
 
 	session["compRequests"] += request["compression"]

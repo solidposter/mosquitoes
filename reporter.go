@@ -68,40 +68,42 @@ func reporter(input <-chan map[string]int64, interval int) {
 			if isRequest {
 				//	fmt.Println("request report", event)
 				rSummary.requests += 1
-				rSummary.reqTotal += event["timeNano"]
-				if rSummary.reqFastest == 0 || event["timeNano"] < rSummary.reqFastest {
-					rSummary.reqFastest = event["timeNano"]
-				}
-				if rSummary.reqSlowest == 0 || event["timeNano"] > rSummary.reqSlowest {
-					rSummary.reqSlowest = event["timeNano"]
-				}
 
-				rSummary.reqError += event["error"]
+				if event["error"] == 0 { // update this data only on successful requests
+					rSummary.reqTotal += event["timeNano"]
+					if rSummary.reqFastest == 0 || event["timeNano"] < rSummary.reqFastest {
+						rSummary.reqFastest = event["timeNano"]
+					}
+					if rSummary.reqSlowest == 0 || event["timeNano"] > rSummary.reqSlowest {
+						rSummary.reqSlowest = event["timeNano"]
+					}
+
+					rSummary.sizeTot += event["contentLength"]
+					if rSummary.sizeBig == 0 || event["contentLength"] > rSummary.sizeBig {
+						rSummary.sizeBig = event["contentLength"]
+					}
+					if rSummary.sizeSmall == 0 || event["contentLength"] < rSummary.sizeSmall {
+						rSummary.sizeSmall = event["contentLength"]
+					}
+
+					statusCode, _ := event["statusCode"]
+					_, ok := rSummary.statusCodes[statusCode]
+					if ok {
+						rSummary.statusCodes[statusCode] += 1
+					} else {
+						rSummary.statusCodes[statusCode] = 1
+					}
+
+				} else {
+					rSummary.reqError += event["error"]
+				}
 
 				rSummary.compression += event["compression"]
 				rSummary.tcpreuse += event["TCPreuse"]
-				rSummary.sizeTot += event["contentLength"]
-				if rSummary.sizeBig == 0 || event["contentLength"] > rSummary.sizeBig {
-					rSummary.sizeBig = event["contentLength"]
-				}
-				if rSummary.sizeSmall == 0 || event["contentLength"] < rSummary.sizeSmall {
-					rSummary.sizeSmall = event["contentLength"]
-				}
-
 				rSummary.dnsStart += event["DNSstart"]
 				rSummary.dnsSuccess += event["DNSsuccess"]
 				rSummary.tlsStart += event["TLSstart"]
 				rSummary.tlsSuccess += event["TLSsuccess"]
-
-				// record all the status codes
-				statusCode, _ := event["statusCode"]
-				_, ok := rSummary.statusCodes[statusCode]
-				if ok {
-					rSummary.statusCodes[statusCode] += 1
-				} else {
-					rSummary.statusCodes[statusCode] = 1
-				}
-
 			}
 		}
 	}
