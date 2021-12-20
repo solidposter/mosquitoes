@@ -58,7 +58,6 @@ func main() {
 		if *slowstartPtr {
 			time.Sleep(time.Duration(*lifetimePtr / *numclientPtr) * time.Second)
 		}
-		// stage over interval
 	}
 	// wait forever
 	<-(chan int)(nil)
