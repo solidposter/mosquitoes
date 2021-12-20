@@ -161,13 +161,16 @@ func resetSession(session map[string]int64) {
 	}
 
 	// reset values for a new session
-	session["reqFastest"] = 0   // fastest request
-	session["reqSlowest"] = 0   // slowest request
-	session["reqSum"] = 0       // Total request times
-	session["numRequests"] = 0  // number of requests in the session
-	session["compRequests"] = 0 // number of requests with compression
-	session["clientClose"] = 0  // 1 if session is closed by client, else 0
-	session["timeNano"] = 0     // session time in nanoseconds
+	session["reqFastest"] = 0      // fastest request
+	session["reqSlowest"] = 0      // slowest request
+	session["reqSum"] = 0          // Total request times
+	session["contentLargest"] = 0  // the largest content length of the session
+	session["contentSmallest"] = 0 // the smallest content length of the session
+	session["contentSum"] = 0      // the total content for of the session
+	session["numRequests"] = 0     // number of requests in the session
+	session["compRequests"] = 0    // number of requests with compression
+	session["clientClose"] = 0     // 1 if session is closed by client, else 0
+	session["timeNano"] = 0        // session time in nanoseconds
 	session["error"] = 0
 	session["TLSstart"] = 0   // number of TLS handshakes started
 	session["TLSsuccess"] = 0 // number of TLS handshakes successful
@@ -185,6 +188,15 @@ func updateSession(request, session map[string]int64) {
 		if session["reqSlowest"] == 0 || request["timeNano"] > session["reqSlowest"] {
 			session["reqSlowest"] = request["timeNano"]
 		}
+
+		session["contentSum"] += request["contentLength"]
+		if session["contentLargest"] == 0 || request["contentLength"] > session["contentLargest"] {
+			session["contentLargest"] = request["contentLength"]
+		}
+		if session["contentSmallest"] == 0 || request["contentLength"] < session["contentSmallest"] {
+			session["contentSmallest"] = request["contentLength"]
+		}
+
 	} else {
 		session["error"] += request["error"]
 	}

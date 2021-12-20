@@ -168,6 +168,16 @@ func printSession(session map[string]int64) {
 		fmt.Printf(" fastest:%vms", session["reqFastest"]/1000/1000)
 		fmt.Printf(" slowest:%vms", session["reqSlowest"]/1000/1000)
 		fmt.Print(")")
+
+		fmt.Printf(" content(tot:%v", session["contentSum"])
+		if session["contentLargest"] == session["contentSmallest"] {
+			fmt.Printf(" rSize:%v", session["contentLargest"])
+		} else {
+			fmt.Printf(" avg:%v", session["contentSum"]/session["numRequests"])
+			fmt.Printf(" largest: %v", session["contentLargest"])
+			fmt.Printf(" smallest: %v", session["contentSmallest"])
+		}
+		fmt.Print(")")
 	}
 
 	if session["numRequests"] != 0 {
