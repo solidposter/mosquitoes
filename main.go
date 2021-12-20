@@ -54,12 +54,11 @@ func main() {
 	for i := 0; i < *numclientPtr; i++ {
 		go poller(i, *lifetimePtr, *intervalPtr, *urlPtr, reportQ, *compPtr)
 		// staging pollers
-		if *slowstartPtr { // stage over session time
+		time.Sleep(time.Duration(*intervalPtr / *numclientPtr) * time.Millisecond)
+		if *slowstartPtr {
 			time.Sleep(time.Duration(*lifetimePtr / *numclientPtr) * time.Second)
-
-		} else { // stage over interval
-			time.Sleep(time.Duration(*intervalPtr / *numclientPtr) * time.Millisecond)
 		}
+		// stage over interval
 	}
 	// wait forever
 	<-(chan int)(nil)
