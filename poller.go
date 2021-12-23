@@ -90,7 +90,7 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 
 			req, err := http.NewRequest("GET", url, nil)
 			if err != nil {
-				fmt.Print(time.Now().Format("20060102 15:04:05.99 "))
+				fmt.Print(time.Now().Format("20060102 15:04:05.00 "))
 				fmt.Printf("NewRequest error:", err)
 				os.Exit(1)
 			}
@@ -100,7 +100,7 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 			rStart = time.Now()
 			resp, err := client.Do(req)
 			if err != nil {
-				fmt.Print(time.Now().Format("20060102 15:04:05.99 "))
+				fmt.Print(time.Now().Format("20060102 15:04:05.00 "))
 				fmt.Println("Do error:", err)
 				rEnd = time.Now()
 				request["error"] = 1
