@@ -26,7 +26,7 @@ import (
 func main() {
 	compPtr := flag.Bool("c", false, "disables compression")
 	intervalPtr := flag.Int("i", 1000, "client interval between requests in milliseconds")
-	lifetimePtr := flag.Int("l", 6048000, "session lifetime in seconds")
+	lifetimePtr := flag.Int("l", 300, "session lifetime in seconds")
 	numclientPtr := flag.Int("n", 1, "number of client sessions")
 	slowstartPtr := flag.Bool("s", false, "slow start, stage the sessions over the session life time instead of client interval")
 	urlPtr := flag.String("u", "https://localhost/", "URL to fetch")
