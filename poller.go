@@ -91,7 +91,7 @@ func poller(id int, lifetime int, interval int, url string, reportQ chan<- map[s
 			req, err := http.NewRequest("GET", url, nil)
 			if err != nil {
 				fmt.Print(time.Now().Format("20060102 15:04:05.00 "))
-				fmt.Printf("NewRequest error:", err)
+				fmt.Println("NewRequest error:", err)
 				os.Exit(1)
 			}
 			clientTraceCtx := httptrace.WithClientTrace(req.Context(), clientTrace)
